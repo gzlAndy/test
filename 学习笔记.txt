@@ -1,0 +1,256 @@
+Git简介
+------------------------------------------------
+	版本控制
+	CVS--->SVN--->Git
+	
+	
+Git工作模式
+----------------------------------------------------
+	上传 :
+		workspace -->(add) LocalCache -->{commit} LocalRepository -->(push) RemoteReponsitory
+	下载 :
+		RemoteReposiTory -->(clone) LocalRepository -->(checkout) workSpace
+
+Git初始化
+------------------------------------------------
+	##为一台电脑配置身份信息
+	$ git config --global user.name "Your Name"
+	$ git config --global user.email "email@example.com"
+	
+	##把某个目录变成可以让git管理到的目录（创建版本库）
+	git init
+	
+
+Git基本命令
+--------------------------------------------------
+	#把内容输入到一个文件
+		echo "xxxx" > xxxx 
+	#把工作空间的某个文件添加到cache
+		git add  xxxx
+	#把工作空间的所有内容添加到cache
+		git add -A
+	#把cache当中的某个文件提交到本地库
+		git commit -m "xxxx"
+	#all
+		git commit -am "xxxx"
+	#cache ---->work file恢复一个文件  file1 file2 恢复两个文件  .恢复所有文件
+		git checkout readme.txt 
+		备注:
+			将暂存区的文件恢复到工作区
+			
+	#git状态查询
+		git status
+	#查看不同的地方 默认查看工作区和cache
+		#git diff --cached   比较cache和Repository
+		#git diff HEAD 工作区和最新的Resository
+		#git diff commit-id 工作区和制定的repository
+		#git diff --cached commit-id
+		#git diff --commit-id commit-id
+		git diff 
+		
+	#reset 顾名思义   （HEAD~100）
+		git reset --hard HEAD^      //恢复到上一个版本(版本指得是提交点)
+		git reset --hard HEAD-n      //恢复到上n一个版本
+		git reset --hard commit-id   //恢复到指定版本
+	#git的日志
+		git log --pretty=oneline
+	#oh my pretty pretty boy i love you 
+		git reflog  查看历史命令
+		
+	#git rm --cached file_path
+		git rm 
+		git mv
+		
+	#远程仓库的克隆岛本地库
+		git clone
+	#关联远程仓库
+		git remote add 别名 url
+	#推送到远程仓库
+		git push 别名
+	#拉取远程仓库的内容
+		git pull 
+		
+	#查看当前分支 -a查看所有分支 -av 查看所有分支的信息 -avv 查看所有分支的信息和关系
+		git branch
+	#创建一个分支 基于当前分支创建分支
+		git branch  xxx
+	#基于oldType创建分支
+		git branch newBranch oldType
+	#切换分支
+		git checkout 分支的名字
+	#删除分支
+		git branch -d   xxx
+	#查看文件内容
+		git cat-file -p  commitid
+	#查看对象类型 blob commit tree
+		git cat-file -t commitid
+		
+github
+------------------------------------------------------------
+	$ ssh-keygen -t rsa -C "email"    //生成秘钥
+	生成秘钥之后,将公钥发送给管理git远程仓库的管理员,添加允许修改权限
+	git remote add nickName gitUrl    //连接git远程仓库
+	git push -u remoteBranch localBranch //上传文件到git远程仓库
+
+
+	
+分支
+----------------------------------------------------------
+	查看分支
+		git branch       #查看当前分支
+		git branch -a    #查看所有分支
+		git branch -av   #查看所有分支及其信息
+		git branch -avv  #查看所有分支及其信息与关联到远程仓库的信息
+
+	创建分支
+		基于当前分支创积分分支 
+			git branch 新分支名称
+		基于远程分支创建分支
+			git branch 新分支名称  关联的远程仓库名/远程分支名
+		基于新分支创建分支
+			git branch 新分支名称 旧分支名称
+		基于提交创建分支
+			
+	切换分支	
+		git checkout 分支名
+
+	合并分支
+
+		要切换到主干上去合并分支
+
+		比如说
+			主干A
+			分支A1
+			分支A2
+			目前需要A合并A1的代码
+			需要切换到A上
+				git merge A1
+	
+	git分支的存储
+		本地分支
+			.git/refs/heads
+				以分支命名的文件,内部存储的一个commi-id
+		远程分支
+			.git/refs/remotes
+			
+	git如何得知当前分支
+		.git/HEAD
+			文件存储的
+				ref: refs/heads|(remotes)/分支名
+			
+git原理
+---------------------------------------------------------------
+	针对元数据操作
+	针对文件操作
+
+	find .git/objects  -type f 查询object是下面所有的文件
+	git hash-object -w xxx 放到git数据库并且返回hash值  add操作？
+
+	git cat-file -t 目录+文件名    #查看文件类型
+	git cat-file -p 目录+文件名    #查看文件内容
+
+	git对象
+	-----------------------------------------
+	Blob 对象(git add产生的对象)
+		文件的内容
+		存储的是文件内容，压缩的
+		文件内容是根据内容算出的一个hash值
+		
+	tree对象
+		多个blob对象的指针(指向文件时)
+		子tree对象的指针(指向目录时)
+		文件名
+		文件类型
+	commit对象(git commit产生的对象)
+		注释信息
+		指向一个tree对象的指针
+		父commit-id
+		作者信息
+	
+	tag对象
+	
+	git如何知道目前处于哪个分支的?
+	------------------------------------------
+		.git/HEAD文件中存储的指向目前所处的分支
+			ref: refs/heads(本地分支)|remotes(远程仓库分支)/分支名
+			.git/refs/heads目录中存储的是建立的本地分支
+			.git/refs/remotes目录中存储的是建立的远程仓库分支
+		分支名的文件中存储的是commit-id,即某个提交点的commit对象的指针id
+		commit-id指向.git/objects中的某个git对象
+			git的对象
+				commit对象
+					一个tree对象的引用地址
+					注释
+					父commit-id
+					作者信息
+					提交者信息
+				tree对象
+					n个tree对象引用地址
+					n个blob对象引用地址
+					文件名
+					文件类型
+					注意:
+						n表示0个或多个
+				blob对象
+					经过压缩加密的文件内容
+		思考:
+			HAED中直接存储commit-id值而不经过ref: refs/heads/分支名 转存吗?
+				可以,
+				使用git checkout commit-id可以将HEAD的值变为commit-id
+				但是存在一个问题,当主干和多个分支指向同一个commit-id时,
+				就不清楚此时git到底处于哪个分支
+				
+搭建远程仓库
+---------------------------------------------------------------
+		基于文件共享(nfs)
+			略...
+		基于Linux ssh
+			安装git
+				yum install git
+			在Linux上创建新的fit仓库
+				git init --bare
+			访问地址
+				centos@192.168.31.200://home/centos/git
+			
+			测试:
+				初始化本地git仓库,git init
+				创建文件
+				关联远程仓库
+					git remote add centos centos@192.168.31.200:/home/centos/git
+				将本地仓库上传到远程仓库
+					git push centos master
+				
+				克隆远程仓库到本地
+					git clone centos@192.168.31.200:/home/centos/git
+					
+		基于gitlab
+			
+			安装官网:https://about.gitlab.com/install
+
+			本地安装
+				传上去
+				gitlab-ce-10.8.2-ce.0.el7.x86_64.rpm
+				安装 rpm -ivh /home/tools/gitlab-ce-10.8.2-ce.0.el7.x86_64.rpm
+				sudo gitlab-ctl reconfigure   时间很少8-10分钟
+				gitlab-ctl start 启动gitlab
+				访问gitlab  http://ip:port
+				设置密码
+
+			
+
+
+
+问题
+-------------------------------------------------------------
+	workspace是git init初始化的目录
+	LocalCache      是在哪?
+	LocalRepository 又是在哪?
+	
+	文件修改后存储在哪?
+	文件add之后存储在哪?
+	文件commit之后存储在哪?
+	
+	创建分支后,修盖文件未提交,主干上看到的是分支上修改的文件,这个是bug还是专门的设计思路?
+	
+	初始化两个git工作空间,为什么一个空间修改文件后可以切换分支,另外一个不可以切换分支?
+	
