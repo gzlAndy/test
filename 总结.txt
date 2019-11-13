@@ -34,5 +34,11 @@ git配置
 	git diff HEAD        #比较工作区和本地仓库的不同
 	git diff commit-id   #比较工作去和指定提交点的不同
 	
-	
+		
+	#恢复
+	git reset  HEAD^        #恢复到上一个提交点
+	git reset  HEAD-n       #恢复到上n个版本
+	git reset  commit-id    #恢复到指定提交点
+	--hard 强制
+	git checkout readme.txt       #将缓存区文件恢复到工作区
 	
