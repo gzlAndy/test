@@ -18,8 +18,21 @@ git配置
 基本使用
 --------------------------------------
 	#将工作空间的文件添加到缓存区
-	git add file
-	#将缓存区的文件提交到本地仓库	
-	git commit file -m "注释"       
-	git add -a            #将工作空间的文件添加到缓存区
-	git commit -a         #将缓存区的文件提交到本地仓库
+	git add file   #单个文件
+	git add -A     #工作空间的所有文件
+	
+	#将缓存区的文件提交到本地仓库，提交文件必须添加注释	
+	git commit file -m "注释"   #单个文件  
+	git commit -am  "注释"      #缓存区的所有文件
+	
+	
+	#查询状态
+	git status
+	
+	#查询不同
+	git diff             #比较缓存区和本地仓库的不同，默认--cache
+	git diff HEAD        #比较工作区和本地仓库的不同
+	git diff commit-id   #比较工作去和指定提交点的不同
+	
+	
+	
